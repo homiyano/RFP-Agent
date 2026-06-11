@@ -4,7 +4,7 @@ python-multipart==0.0.20
 pydantic==2.10.4
 pydantic-settings==2.7.1
 langgraph==0.2.62
-langchain-core==0.3.28
+langchain-core==0.3.86
 langchain-openai==0.2.14
 langchain-anthropic==0.3.3
 langchain-ollama==0.2.2
