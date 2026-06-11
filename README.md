@@ -56,18 +56,44 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 
-cp .env.example .env  # add your OPENAI_API_KEY
+cp .env.example .env  # configure LLM_PROVIDER and the matching API key/model
 
 uvicorn app.main:app --reload
 ```
 
 The API docs are then available at `http://localhost:8000/docs`.
 
+## Choosing an LLM provider
+
+Both the extraction and drafting agents go through `app/llm.py::get_chat_model`,
+which picks a backend based on the `LLM_PROVIDER` environment variable:
+
+| `LLM_PROVIDER` | Backend                | Relevant env vars                          |
+| -------------- | ----------------------- | ------------------------------------------- |
+| `openai` (default) | OpenAI GPT-4o        | `OPENAI_API_KEY`, `OPENAI_MODEL`             |
+| `anthropic`    | Claude (Anthropic)      | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`       |
+| `ollama`       | Local model via Ollama  | `OLLAMA_MODEL`, `OLLAMA_BASE_URL`            |
+
+For `ollama`, pick a model that supports tool calling / structured output (e.g.
+`llama3.1`, `qwen2.5`, `mistral-nemo`) and make sure it's pulled:
+
+```bash
+ollama pull llama3.1
+```
+
+No API key is needed for the `ollama` provider, but a running Ollama server is.
+
 ## Running with Docker
 
 ```bash
-cp .env.example .env  # add your OPENAI_API_KEY
+cp .env.example .env  # configure LLM_PROVIDER and the matching API key/model
 docker compose up --build
+```
+
+To use a local Ollama model instead, also start the bundled `ollama` service:
+
+```bash
+LLM_PROVIDER=ollama OLLAMA_BASE_URL=http://ollama:11434 docker compose --profile ollama up --build
 ```
 
 ## Tests

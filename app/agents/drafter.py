@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from typing import TypedDict
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph
 
+from app.llm import get_chat_model
 from app.schemas.rfp import SECTION_ORDER, SECTION_TITLES, Proposal, ProposalSection, RFPExtraction
 from app.templates.proposal import render_proposal
 
@@ -63,9 +63,8 @@ class DrafterState(TypedDict, total=False):
     docx_bytes: bytes
 
 
-def _get_llm() -> ChatOpenAI:
-    model = os.getenv("OPENAI_MODEL", "gpt-4o")
-    return ChatOpenAI(model=model, temperature=0.2)
+def _get_llm() -> BaseChatModel:
+    return get_chat_model(temperature=0.2)
 
 
 def _make_section_node(section_key: str):

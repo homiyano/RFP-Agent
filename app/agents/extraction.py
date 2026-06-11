@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from typing import TypedDict
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import END, StateGraph
 
+from app.llm import get_chat_model
 from app.parsers.document import parse_document, sections_to_text
 from app.schemas.rfp import RFPExtraction
 
@@ -46,9 +46,8 @@ class ExtractionState(TypedDict, total=False):
     extraction: RFPExtraction
 
 
-def _get_llm() -> ChatOpenAI:
-    model = os.getenv("OPENAI_MODEL", "gpt-4o")
-    return ChatOpenAI(model=model, temperature=0)
+def _get_llm() -> BaseChatModel:
+    return get_chat_model(temperature=0)
 
 
 def parse_node(state: ExtractionState) -> dict:
